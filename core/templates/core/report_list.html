@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Active Reports | Missing Persons</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      max-width: 800px; 
+      margin: 0 auto; 
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .report-card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h3 {
+      color: #007bff;
+      margin-top: 0;
+    }
+    .report-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    .actions {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 0 10px;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    .btn-report {
+      background: #28a745;
+    }
+    .btn-logout {
+      background: #dc3545;
+    }
+    hr {
+      border: 0;
+      height: 1px;
+      background: #eee;
+      margin: 20px 0;
+    }
+    .no-reports {
+      text-align: center;
+      padding: 40px;
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+<h2>{% if user.is_admin %}All Reports{% else %}My Reports{% endif %}</h2>
+
+{% for report in reports %}
+  <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
+    <h3>{{ report.name }} (Age {{ report.age }})</h3>
+    <p><strong>Status:</strong> {{ report.status }}</p>
+    <p><strong>Last seen at:</strong> {{ report.last_seen_location }}</p>
+    <p>{{ report.description }}</p>
+    {% if report.image %}
+      <img src="{{ report.image.url }}" width="200" alt="report image">
+    {% endif %}
+    
+    {% if user.is_admin %}
+      <p><strong>Submitted by:</strong> {{ report.user.username }}</p>
+      {% if report.moderation_log %}
+        <p><em>Moderated: {{ report.moderation_log.action }} at {{ report.moderation_log.timestamp }}</em></p>
+      {% else %}
+        <p><em>Pending moderation</em></p>
+      {% endif %}
+    {% endif %}
+  </div>
+{% empty %}
+  <p>No reports to show.</p>
+{% endfor %}
+
+<br>
+<a href="{% url 'report_create' %}">Submit a New Report</a> |
+<a href="{% url 'home' %}">Back to Home</a>
+
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+** python manage.py startapp core --> contains essential files for your app.
+
+** why using UUID ? --> Avoids sequential IDs (harder to guess in URLs) and Useful for distributed databases.
+
+* The AbstractUser class is used as a base class for custom user models in Django for several important
+
+* using indexes creates fast-search , in our project to quickly finds report when searching by last_seen , age , when the report was made 
+
+
