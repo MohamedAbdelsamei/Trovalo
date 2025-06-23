@@ -35,7 +35,7 @@ def login_view(request):
             )
             if user:
                 login(request, user)
-                return redirect('report_list')
+                return redirect('home')
             
             else:
                 messages.error(request, "Invalid username or password.")

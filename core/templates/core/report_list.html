@@ -79,6 +79,9 @@
 {% for report in reports %}
   <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
     <h3>{{ report.name }} (Age {{ report.age }})</h3>
+    {% if report.national_id %}
+        <p><strong>National ID:</strong> {{ report.national_id }}</p>
+    {% endif %}
     <p><strong>Status:</strong> {{ report.status }}</p>
     <p><strong>Last seen at:</strong> {{ report.last_seen_location }}</p>
     <p>{{ report.description }}</p>

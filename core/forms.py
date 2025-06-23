@@ -17,5 +17,5 @@ class LoginForm(forms.Form):
 class ReportForm(forms.ModelForm):
     class Meta:
         model = MissingPersonReport
-        fields = ['name', 'description', 'age', 'last_seen_location', 'image']
+        fields = ['name','national_id' ,'description', 'age', 'last_seen_location', 'image']
 

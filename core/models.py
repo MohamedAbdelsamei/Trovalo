@@ -1,6 +1,7 @@
 from django.db import models
 import uuid
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 
 class User(AbstractUser):
@@ -21,6 +22,17 @@ class MissingPersonReport(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports')
     name = models.CharField(max_length=255)
+    national_id = models.CharField(
+        max_length=20,
+        unique=True,
+        validators=[
+            MinLengthValidator(8),
+            MaxLengthValidator(20)
+        ],
+        help_text="National identification number (8-20 characters)",
+        null=True,
+        blank=True  # Only if national ID might be unknown
+    )
     description = models.TextField()
     age = models.PositiveIntegerField()
     last_seen_location = models.CharField(max_length=255)
@@ -31,6 +43,13 @@ class MissingPersonReport(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=["last_seen_location", "age", "created_at"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["national_id"],
+                name="unique_national_id",
+                condition=models.Q(national_id__isnull=False)
+            ),
         ]
 
 class ModerationLog(models.Model):
