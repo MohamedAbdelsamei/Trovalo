@@ -1,5 +1,5 @@
 from django.db import models
-import uuid
+import uuid,json
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 
@@ -33,6 +33,7 @@ class MissingPersonReport(models.Model):
         null=True,
         blank=True  # Only if national ID might be unknown
     )
+    face_encoding = models.TextField(null=True, blank=True)  # Stores face vector
     description = models.TextField()
     age = models.PositiveIntegerField()
     last_seen_location = models.CharField(max_length=255)
@@ -49,8 +50,18 @@ class MissingPersonReport(models.Model):
                 fields=["national_id"],
                 name="unique_national_id",
                 condition=models.Q(national_id__isnull=False)
-            ),
+            ),  
         ]
+
+    def set_face_encoding(self, encoding):    
+        """Store encoding as JSON string"""   
+        self.face_encoding = json.dumps(encoding)
+
+    def get_face_encoding(self):
+        """Retrieve encoding as list from JSON string"""
+        if self.face_encoding:
+            return json.loads(self.face_encoding)
+        return None    
 
 class ModerationLog(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
