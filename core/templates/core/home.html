@@ -11,6 +11,7 @@
             --accent: #f72585;
             --light: #f8f9fa;
             --dark: #212529;
+            --success: #4cc9f0;
         }
         
         body {
@@ -73,6 +74,11 @@
             color: white;
         }
         
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
         .btn-outline {
             border: 2px solid var(--primary);
             color: var(--primary);
@@ -97,6 +103,20 @@
             margin-top: 2rem;
         }
         
+        .search-section {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.4rem;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        .search-title {
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+        
         @media (max-width: 600px) {
             body {
                 padding: 1rem;
@@ -118,12 +138,19 @@
         <p class="tagline">Helping communities reunite with missing loved ones</p>
     </header>
 
+    <div class="search-section">
+        <h2 class="search-title">Search Our Database</h2>
+        <a href="{% url 'report_search' %}" class="btn btn-success">
+            Search for Missing Persons
+        </a>
+    </div>
+
     {% if user.is_authenticated %}
         <div class="welcome-message">
             <p>Hello, <span class="username">{{ user.username }}</span>!</p>
             <p>Thank you for helping make our community safer.</p>
         </div>
-        
+
         <div class="action-grid">
             <a href="{% url 'report_list' %}" class="btn btn-primary">
                 View Current Reports

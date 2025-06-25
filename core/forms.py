@@ -19,3 +19,11 @@ class ReportForm(forms.ModelForm):
         model = MissingPersonReport
         fields = ['name','national_id' ,'description', 'age', 'last_seen_location', 'image']
 
+class ReportSearchForm(forms.Form):
+    national_id = forms.CharField(required=False, label="National ID")
+    image = forms.ImageField(required=False, label="Upload Face Image")
+    age = forms.IntegerField(required=False)
+    last_seen_location = forms.CharField(required=False) 
+    name = forms.CharField(required=False, label="Name")
+
+
