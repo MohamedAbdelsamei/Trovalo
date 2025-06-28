@@ -138,14 +138,9 @@
         <p class="tagline">Helping communities reunite with missing loved ones</p>
     </header>
 
-    <div class="search-section">
-        <h2 class="search-title">Search Our Database</h2>
-        <a href="{% url 'report_search' %}" class="btn btn-success">
-            Search for Missing Persons
-        </a>
-    </div>
-
     {% if user.is_authenticated %}
+
+        <a href="{% url 'message_threads' %}">📂 Messages</a>
         <div class="welcome-message">
             <p>Hello, <span class="username">{{ user.username }}</span>!</p>
             <p>Thank you for helping make our community safer.</p>

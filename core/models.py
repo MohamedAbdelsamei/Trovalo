@@ -66,6 +66,15 @@ class MissingPersonReport(models.Model):
 class ModerationLog(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     report = models.OneToOneField(MissingPersonReport, on_delete=models.CASCADE, related_name='moderation_log')
-    action = models.CharField(max_length=50)
+    action = models.CharField(max_length=10)
     moderated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='moderated_reports')
     timestamp = models.DateTimeField(auto_now_add=True)
+    comments = models.TextField(null=True, blank=True)
+
+class ReportMessage(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    report = models.ForeignKey(MissingPersonReport, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages', null=True, blank=True)
+    content = models.TextField()
+    sent_at = models.DateTimeField(auto_now_add=True)

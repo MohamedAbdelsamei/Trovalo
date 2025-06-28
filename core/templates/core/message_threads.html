@@ -1,0 +1,9 @@
+<h2>📂 Your Message Threads</h2>
+{% for report in reports %}
+  <div>
+    <h4>{{ report.name }} — {{ report.last_seen_location }}</h4>
+    <a href="{% url 'message_thread' report.id %}">View Conversation</a>
+  </div>
+{% empty %}
+  <p>No messages yet.</p>
+{% endfor %}

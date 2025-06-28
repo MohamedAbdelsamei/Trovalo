@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderation Queue | Trovalo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #212529;
+            background-color: #f8f9fa;
+        }
+        
+        h2 {
+            color: #4361ee;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .report-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        h3 {
+            color: #3a3a3a;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .report-meta {
+            margin-bottom: 1rem;
+        }
+        
+        .report-meta p {
+            margin: 0.5rem 0;
+            color: #555;
+        }
+        
+        .report-meta strong {
+            color: #333;
+            min-width: 100px;
+            display: inline-block;
+        }
+        
+        .report-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin: 1rem 0;
+            border: 1px solid #eee;
+        }
+        
+        .moderation-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .action-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        
+        .approve-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .approve-btn:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+        
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .delete-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+        
+        .empty-queue {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            background: white;
+            border-radius: 8px;
+            border: 1px dashed #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h2>🛠 Moderation Queue</h2>
+
+    {% for report in reports %}
+    <div class="report-card">
+        <h3>{{ report.name }}</h3>
+        
+        <div class="report-meta">
+            <p><strong>Age:</strong> {{ report.age }}</p>
+            <p><strong>Location:</strong> {{ report.last_seen_location }}</p>
+            <p><strong>Submitted by:</strong> {{ report.user.username }}</p>
+        </div>
+
+        {% if report.image %}
+        <img src="{{ report.image.url }}" class="report-image" width="200" alt="Photo of {{ report.name }}">
+        {% endif %}
+
+        <form method="post" action="{% url 'moderate_report' report.id %}" class="moderation-actions">
+            {% csrf_token %}
+            <textarea name="comment" rows="2" cols="40" placeholder="Optional comment..."></textarea><br>
+            <button type="submit" name="action" value="approve" class="action-btn approve-btn">
+                ✅ Approve
+            </button>
+            <button type="submit" name="action" value="delete" class="action-btn delete-btn">
+                ❌ Delete
+            </button>
+        </form>
+    </div>
+    {% empty %}
+    <div class="empty-queue">
+        <p>No pending reports.</p>
+    </div>
+    {% endfor %}
+</body>
+</html>

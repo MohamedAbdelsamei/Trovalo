@@ -127,3 +127,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 AUTH_USER_MODEL = 'core.User'
+
+# Sends email output to the console (ideal for testing)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

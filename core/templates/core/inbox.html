@@ -1,0 +1,16 @@
+<h2>📥 Inbox</h2>
+
+{% if messages %}
+  {% for msg in messages %}
+    <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
+      <p><strong>From:</strong> {{ msg.sender.username }}</p>
+      <p><strong>Regarding Report:</strong> {{ msg.report.name }}</p>
+      <p><strong>Time:</strong> {{ msg.sent_at|date:"Y-m-d H:i" }}</p>
+      <p><strong>Message:</strong></p>
+      <blockquote>{{ msg.content }}</blockquote>
+      <a href="{% url 'reply_message' msg.id %}">↩️ Reply</a>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>You have no messages yet.</p>
+{% endif %}

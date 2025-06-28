@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, MissingPersonReport
+from .models import User, MissingPersonReport,ReportMessage
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField()
@@ -26,4 +26,10 @@ class ReportSearchForm(forms.Form):
     last_seen_location = forms.CharField(required=False) 
     name = forms.CharField(required=False, label="Name")
 
-
+class ReportMessageForm(forms.ModelForm):
+    class Meta:
+        model = ReportMessage
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Write your message...'}),
+        }

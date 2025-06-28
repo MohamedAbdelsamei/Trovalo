@@ -1,0 +1,15 @@
+<h2>🗂 Messages for: {{ report.name }}</h2>
+
+{% for msg in messages %}
+  <div style="border-bottom:1px solid #ccc; margin-bottom:10px;">
+    <p><strong>{{ msg.sender.username }}</strong> @ {{ msg.sent_at|date:"Y-m-d H:i" }}</p>
+    <blockquote>{{ msg.content }}</blockquote>
+  </div>
+{% endfor %}
+
+<h3>↩️ Send a Reply</h3>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Send</button>
+</form>

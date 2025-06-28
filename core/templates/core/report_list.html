@@ -51,6 +51,20 @@
     .btn:hover {
       opacity: 0.9;
     }
+
+    .btn-search {
+        background-color: #4cc9f0;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 0 10px;
+    }
+        
+    .btn-search:hover {
+        background-color: #369ec4;
+        transform: translateY(-2px);
+    }
+
     .btn-report {
       background: #28a745;
     }
@@ -76,6 +90,10 @@
 
 <h2>{% if user.is_admin %}All Reports{% else %}My Reports{% endif %}</h2>
 
+<div class="search-btn-container">
+    <a href="{% url 'report_search' %}" class="btn btn-search">Search For missing person</a>
+</div>
+
 {% for report in reports %}
   <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
     <h3>{{ report.name }} (Age {{ report.age }})</h3>
@@ -92,7 +110,9 @@
     {% if user.is_admin %}
       <p><strong>Submitted by:</strong> {{ report.user.username }}</p>
       {% if report.moderation_log %}
-        <p><em>Moderated: {{ report.moderation_log.action }} at {{ report.moderation_log.timestamp }}</em></p>
+        <p><em>Moderated: {{ report.moderation_log.action }} at {{ report.moderation_log.timestamp }}
+          with comment: "{{ report.moderation_log.comments }}"</em></p>
+        </em></p>
       {% else %}
         <p><em>Pending moderation</em></p>
       {% endif %}
