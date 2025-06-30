@@ -1,9 +1,16 @@
-<h2>📂 Your Message Threads</h2>
+<h2>📂 Message Threads</h2>
 {% for report in reports %}
   <div>
-    <h4>{{ report.name }} — {{ report.last_seen_location }}</h4>
+    <h4>
+      {{ report.name }} — {{ report.last_seen_location }}
+      {% if report.unread_count > 0 %}
+        <span style="color: white; background: red; border-radius: 5px; padding: 2px 6px; font-size: 0.9em;">
+          {{ report.unread_count }} new
+        </span>
+      {% endif %}
+    </h4>
     <a href="{% url 'message_thread' report.id %}">View Conversation</a>
   </div>
 {% empty %}
-  <p>No messages yet.</p>
+  <p>No message threads yet.</p>
 {% endfor %}

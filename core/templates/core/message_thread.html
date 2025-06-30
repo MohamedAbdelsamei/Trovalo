@@ -7,7 +7,6 @@
   </div>
 {% endfor %}
 
-<h3>↩️ Send a Reply</h3>
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}

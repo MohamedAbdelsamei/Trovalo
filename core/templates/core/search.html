@@ -158,7 +158,7 @@
     {% if result.image %}
       <img src="{{ result.image.url }}" class="result-image" width="300" alt="Photo of {{ result.name }}">
     {% endif %}
-    <a href="{% url 'send_report_message' result.id %}">💬 Contact the reporter</a>
+    <a href="{% url 'message_thread' result.id %}">💬 Contact the reporter</a>
 
   </div>
 {% endif %}

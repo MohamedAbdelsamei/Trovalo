@@ -10,6 +10,7 @@ from django.contrib import messages
 from PIL import Image
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.mail import send_mail
+from django.db.models import Count, Q
 
 
 @staff_member_required
@@ -219,91 +220,28 @@ def moderate_report(request, report_id):
     return redirect('moderation_queue')
 
 
-
-@login_required
-def send_report_message(request, report_id):
-    report = get_object_or_404(MissingPersonReport, id=report_id)
-
-    if request.method == 'POST':
-        form = ReportMessageForm(request.POST)
-        if form.is_valid():
-            msg = form.save(commit=False)
-            msg.report = report
-            msg.sender = request.user
-            msg.recipient = report.user
-            msg.save()
-
-            # ✅ Email the report creator
-            send_mail(
-                subject="🧩 Someone has info on your missing report",
-                message=f"You've received a message from {request.user.username}:\n\n{msg.content}",
-                from_email="noreply@trovalo.local",
-                recipient_list=[report.user.email],
-                fail_silently=False
-            )
-
-            messages.success(request, "Message sent and email notification delivered.")
-            return redirect('report_search')  # or redirect back to report
-
-    else:
-        form = ReportMessageForm()
-
-    return render(request, 'core/send_message.html', {'form': form, 'report': report})
-
-@login_required
-def reply_message(request, message_id):
-    original = get_object_or_404(ReportMessage, id=message_id)
-
-    # Only recipient can reply
-    if request.user != original.recipient:
-        return HttpResponseForbidden()
-
-    if request.method == 'POST':
-        form = ReportMessageForm(request.POST)
-        if form.is_valid():
-            reply = form.save(commit=False)
-            reply.report = original.report
-            reply.sender = request.user
-            reply.recipient = original.sender
-            reply.save()
-
-            # Notify sender (original searcher)
-            send_mail(
-                subject="🧩 You received a reply from the report owner",
-                message=f"{request.user.username} replied to your message:\n\n{reply.content}",
-                from_email="noreply@trovalo.local",
-                recipient_list=[original.sender.email],
-                fail_silently=False
-            )
-
-            messages.success(request, "Reply sent.")
-            return redirect('inbox')
-    else:
-        form = ReportMessageForm()
-
-    return render(request, 'core/reply_message.html', {
-        'form': form,
-        'original': original
-    })
-
-
-@login_required
-def inbox(request):
-    # Only show messages sent to this user
-    messages_received = ReportMessage.objects.filter(recipient=request.user).order_by('-sent_at')
-    return render(request, 'core/inbox.html', {'messages': messages_received})
-
-
 @login_required
 def message_threads(request):
-    # Get all reports owned by the user that have messages
-    reports = MissingPersonReport.objects.filter(user=request.user, messages__isnull=False).distinct()
+    # 1. Reports where current user is the owner and has messages
+    owned_reports = MissingPersonReport.objects.filter(user=request.user, messages__isnull=False)
+    # 2. Reports where user sent a message
+    messaged_reports = MissingPersonReport.objects.filter(messages__sender=request.user)
+    # Combine both and remove duplicates
+    reports = (owned_reports | messaged_reports).distinct().annotate(
+    unread_count=Count('messages', filter=Q(messages__recipient=request.user, messages__is_read=False))
+    )
     return render(request, 'core/message_threads.html', {'reports': reports})
 
 @login_required
 def message_thread(request, report_id):
-    report = get_object_or_404(MissingPersonReport, id=report_id, user=request.user)
+    report = get_object_or_404(MissingPersonReport, id=report_id)
     messages_thread = ReportMessage.objects.filter(report=report).order_by('sent_at')
+    
+    ReportMessage.objects.filter(
+    report=report,
+    recipient=request.user,
+    is_read=False
+    ).update(is_read=True)
 
     if request.method == 'POST':
         form = ReportMessageForm(request.POST)
@@ -311,7 +249,13 @@ def message_thread(request, report_id):
             msg = form.save(commit=False)
             msg.report = report
             msg.sender = request.user
-            msg.recipient = messages_thread.last().sender  # Simplified; adjust as needed
+            if request.user == report.user:
+                # This is a reply — get the original sender
+                last_msg = messages_thread.last()
+                msg.recipient = last_msg.sender if last_msg else None  # fallback if thread is broken
+            else:
+                # This is the first contact
+                msg.recipient = report.user 
             msg.save()
 
             send_mail(
