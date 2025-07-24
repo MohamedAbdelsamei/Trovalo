@@ -1,16 +1,27 @@
-<h2>📂 Message Threads</h2>
-{% for report in reports %}
-  <div>
-    <h4>
-      {{ report.name }} — {{ report.last_seen_location }}
-      {% if report.unread_count > 0 %}
-        <span style="color: white; background: red; border-radius: 5px; padding: 2px 6px; font-size: 0.9em;">
-          {{ report.unread_count }} new
-        </span>
-      {% endif %}
-    </h4>
-    <a href="{% url 'message_thread' report.id %}">View Conversation</a>
-  </div>
-{% empty %}
-  <p>No message threads yet.</p>
-{% endfor %}
+{% extends "core/base.html" %}
+{% block title %}Message Threads | Trovalo{% endblock %}
+
+{% block content %}
+  <h2 class="inbox-title">📂 Message Threads</h2>
+
+  {% if reports %}
+    <div class="thread-list">
+      {% for report in reports %}
+        <div class="thread-card">
+          <div class="thread-header">
+            <h4 class="thread-title">
+              {{ report.name }} — {{ report.last_seen_location }}
+
+              {% if report.unread_count > 0 %}
+                <span class="badge-unread">{{ report.unread_count }} new</span>
+              {% endif %}
+            </h4>
+            <a href="{% url 'message_thread' report.id %}" class="btn btn-outline">💬 View Conversation</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="no-messages">No message threads yet.</p>
+  {% endif %}
+{% endblock %}

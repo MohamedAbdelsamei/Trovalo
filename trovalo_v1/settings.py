@@ -128,5 +128,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 AUTH_USER_MODEL = 'core.User'
 
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "core" / "static", 
+]
+
 # Sends email output to the console (ideal for testing)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

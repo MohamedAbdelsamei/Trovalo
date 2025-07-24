@@ -79,3 +79,6 @@ class ReportMessage(models.Model):
     content = models.TextField()
     sent_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"From {self.sender.username} regarding {self.report.name} at {self.sent_at.strftime('%Y-%m-%d %H:%M')}"

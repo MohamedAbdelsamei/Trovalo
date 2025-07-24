@@ -1,14 +1,23 @@
-<h2>🗂 Messages for: {{ report.name }}</h2>
+{% extends "core/base.html" %}
+{% block title %}Messages for {{ report.name }} | Trovalo{% endblock %}
 
-{% for msg in messages %}
-  <div style="border-bottom:1px solid #ccc; margin-bottom:10px;">
-    <p><strong>{{ msg.sender.username }}</strong> @ {{ msg.sent_at|date:"Y-m-d H:i" }}</p>
-    <blockquote>{{ msg.content }}</blockquote>
+{% block content %}
+  <h2 class="inbox-title">📂 Messages for: {{ report.name }}</h2>
+
+  <div class="message-list">
+    {% for msg in messages %}
+      <div class="message-card">
+        <p><strong>{{ msg.sender.username }}</strong> @ {{ msg.sent_at|date:"Y-m-d H:i" }}</p>
+        <blockquote>{{ msg.content }}</blockquote>
+      </div>
+    {% empty %}
+      <p class="no-messages">No messages in this thread yet.</p>
+    {% endfor %}
   </div>
-{% endfor %}
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Send</button>
-</form>
+  <form method="post" class="form-card">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+{% endblock %}
